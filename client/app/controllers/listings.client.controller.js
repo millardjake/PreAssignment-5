@@ -119,7 +119,7 @@ angular.module('listings').controller('ListingsController', ['$scope', '$locatio
 
       Listings.delete(id)
               .then(function(response) {
-                $scope.listing = response.data;
+                $statego('listings.list', { successMessage: 'Listing successfully updated!'});
               }, function(error) {  
                 $scope.error = 'Unable to delete listing with id "' + id + '"\n' + error;
               });
@@ -139,5 +139,31 @@ angular.module('listings').controller('ListingsController', ['$scope', '$locatio
       }, 
       zoom: 14
     }
+    /*Create Map Markers */
+    $scope.mapMarkers = [];
+
+    Listings.getAll().then(function(response){
+      for( var i = 0; i < response.data.length; i++){
+        if(response.data[i].coordinates == undefined){
+          response.data[i].coordinates = {
+            latitude: undefined,
+            longitude: undefined
+          };
+        }
+        var ret = {
+          name: response.data[i].name,
+          code: response.data[i].code,
+          address: response.data[i].address,
+          latitude: response.data[i].coordinates.latitude,
+          longitude: response.data[i].coordinates.longitude
+        };
+        var idKey = "id";
+        ret[idKey] = i;
+        console.log(ret);
+        $scope.mapMarkers.push(ret);
+      }
+    });
+
+
   }
 ]);
